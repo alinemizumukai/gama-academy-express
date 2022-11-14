@@ -12,6 +12,6 @@ routes.get("/produto/lista", produtoController.listarProduto);
 
 routes.get("/produto/:id", produtoController.consultarProduto);
 
-routes.post("/cadastrar", produtoController.cadastrarProduto);
+routes.post("/produto/criar", produtoController.cadastrarProduto);
 
 module.exports = routes; // necessario para importar as rotas definidas aqui nos demais arquivos
