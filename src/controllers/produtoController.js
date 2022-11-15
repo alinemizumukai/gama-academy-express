@@ -1,86 +1,110 @@
 const { Produtos, Fabricantes, Categorias } = require("../models");
 
 const produtoController ={
-    async listarProduto (req, res) {        
-        const listaProdutos = await Produtos.findAll({
-            include: [
-                {model: Fabricantes}, 
-                {model: Categorias, attributes: ['nome']}
-            ]
-        });
-
-        res.json(listaProdutos);
-    },
-    
-    async consultarProduto(req, res){
-        const { id } = req.params;
-
-        const itemProdutos = await Produtos.findOne(
-            { 
-                where:{
-                    id,
-                },
+    async retornarLista (req, res) { 
+        try {
+            const listaProdutos = await Produtos.findAll({
                 include: [
                     {model: Fabricantes}, 
                     {model: Categorias, attributes: ['nome']}
-                ],
-            }
-        );
+                ]
+            });
+    
+            res.json(listaProdutos);
+        } catch (error) {
+            return res.status(500).json("Ocorreu algum problema.");
+        }
+    },
+    
+    async retornarItem(req, res){
+        try {
+            const { id } = req.params;
 
-        res.json(itemProdutos);
+            if(!id) return res.status(400).json("Id não informado");
+
+            const itemProdutos = await Produtos.findOne(
+                { 
+                    where:{
+                        id,
+                    },
+                    include: [
+                        {model: Fabricantes}, 
+                        {model: Categorias, attributes: ['nome']}
+                    ],
+                }
+            );
+
+            itemProdutos != null ? res.json(itemProdutos): res.json("Produto não encontrado");
+        } catch (error) {
+            return res.status(500).json("Ocorreu algum problema.");
+        }        
     },
 
-    async cadastrarProduto(req, res){
-        const { nome, preco, quantidade, fabricante_id, categoria_id } = req.body;
+    async cadastrarItem(req, res){
+        try {
+            const { nome, preco, quantidade, fabricante_id, categoria_id } = req.body;
 
-        const novoProduto = await Produtos.create(
-            { 
-                nome, 
-                preco, 
-                quantidade,
-                fabricante_id
-            }
-        );
+            const novoProduto = await Produtos.create(
+                { 
+                    nome, 
+                    preco, 
+                    quantidade,
+                    fabricante_id
+                }
+            );
 
-        const categoria = await Categorias.findByPk(categoria_id);
+            const categoria = await Categorias.findByPk(categoria_id);
 
-        await novoProduto.setCategorias(categoria);
-     
-        res.json(novoProduto);
+            await novoProduto.setCategorias(categoria);
+        
+            res.status(201).json(novoProduto);
+        } catch (error) {
+            return res.status(500).json("Ocorreu algum problema.");
+        }        
     },
 
-    async deletarProduto(req, res){
-        const { id } = req.params;
+    async deletarItem(req, res){
+        try {
+            const { id } = req.params;
 
-        await Produtos.destroy(
-            { 
-                where:{
-                    id,
+            await Produtos.destroy(
+                { 
+                    where:{
+                        id,
+                    },
+                }
+            );
+    
+            res.status(204);
+        } catch (error) {
+            return res.status(500).json("Ocorreu algum problema.");
+        }
+    },
+
+    async atualizarItem(req, res){
+        try {
+            const { id } = req.params;
+            const { nome, preco, quantidade, fabricante_id } = req.body;
+
+            if(!id) return res.status(400).json("Id não informado");
+
+            await Produtos.update(
+                { 
+                    nome, 
+                    preco, 
+                    quantidade,
+                    fabricante_id
                 },
-            }
-        );
-
-        res.json("Produto deletado.")
-    },
-
-    async atualizarProduto(req, res){
-        const { id } = req.params;
-        const { nome, preco, quantidade, fabricante_id } = req.body;
-
-        await Produtos.update(
-            { 
-                nome, 
-                preco, 
-                quantidade,
-                fabricante_id
-            },
-            {
-                where:{
-                    id,
-                },
-            }
-        );
-        res.json("Produto Atualizado");
+                {
+                    where:{
+                        id,
+                    },
+                }
+            );
+            res.status(200).json("Produto Atualizado");
+        } catch (error) {
+            return res.status(500).json("Ocorreu algum problema.");
+        }        
     },
 };
 

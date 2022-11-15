@@ -2,10 +2,10 @@ const express = require("express");
 const produtoController = require('../controllers/produtoController');
 const routes = express.Router();
 
-routes.get("/produto/lista", produtoController.listarProduto);
-routes.get("/produto/:id/consultar", produtoController.consultarProduto);
-routes.post("/produto/criar", produtoController.cadastrarProduto);
-routes.delete("/produto/:id/deletar", produtoController.deletarProduto);
-routes.put("/produto/:id/atualizar", produtoController.atualizarProduto);
+routes.get("/produtos", produtoController.retornarLista);
+routes.get("/produtos/:id", produtoController.retornarItem);
+routes.post("/produtos", produtoController.cadastrarItem);
+routes.delete("/produtos/:id", produtoController.deletarItem);
+routes.put("/produtos/:id", produtoController.atualizarItem);
 
-module.exports = routes; // necessario para importar as rotas definidas aqui nos demais arquivos
+module.exports = routes;
