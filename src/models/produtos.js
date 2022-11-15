@@ -1,5 +1,6 @@
 const db = require("../database");
-const { DataTypes } = require('sequelize'); //auxilia no de para dos datatypes do banco para JS
+const { DataTypes } = require('sequelize');
+const Fabricantes = require("./Fabricantes");
 
 const Produtos = db.define("Produtos", {
     id: {
@@ -15,6 +16,13 @@ const Produtos = db.define("Produtos", {
     },
     quantidade:{
         type: DataTypes.INTEGER,
+    },
+    fabricante_id:{
+        type: DataTypes.INTEGER,
+        references: {
+            model: Fabricantes,
+            key: 'id'
+        },
     },
     createdAt:{
         type: DataTypes.DATE,
