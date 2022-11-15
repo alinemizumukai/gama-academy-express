@@ -1,9 +1,12 @@
-const { Produtos, Fabricantes } = require("../models");
+const { Produtos, Fabricantes, Categorias } = require("../models");
 
 const produtoController ={
     async listarProduto (req, res) {        
         const listaProdutos = await Produtos.findAll({
-            include: Fabricantes
+            include: [
+                {model: Fabricantes}, 
+                {model: Categorias, attributes: ['nome']}
+            ]
         });
 
         res.json(listaProdutos);
@@ -17,6 +20,10 @@ const produtoController ={
                 where:{
                     id,
                 },
+                include: [
+                    {model: Fabricantes}, 
+                    {model: Categorias, attributes: ['nome']}
+                ],
             }
         );
 
@@ -24,7 +31,7 @@ const produtoController ={
     },
 
     async cadastrarProduto(req, res){
-        const { nome, preco, quantidade, fabricante_id } = req.body;
+        const { nome, preco, quantidade, fabricante_id, categoria_id } = req.body;
 
         const novoProduto = await Produtos.create(
             { 
@@ -34,6 +41,10 @@ const produtoController ={
                 fabricante_id
             }
         );
+
+        const categoria = await Categorias.findByPk(categoria_id);
+
+        await novoProduto.setCategorias(categoria);
      
         res.json(novoProduto);
     },
