@@ -1,10 +1,12 @@
 const { Usuarios } = require("../models");
+const jwt = require("jsonwebtoken");
+const secret = require("../configs/secret");
 const bcrypt = require("bcryptjs");
 
 const AuthController = {
 
     async login(req, res){
-        const { email, senha } = req.body
+        const { email, senha } = req.body;
 
         const usuario = await Usuarios.findOne({
             where:{
@@ -20,7 +22,17 @@ const AuthController = {
             return res.status(401).json("Senha inválida!");
         }
 
-        return res.json("Logado");
+        const token = jwt.sign(
+            {
+                id: usuario.id, 
+                email: usuario.email, 
+                nome: usuario.nome,
+                userType: 'user'
+            }, 
+            secret.key
+        );
+
+        return res.json(token);
     },
 };
 

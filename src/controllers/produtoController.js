@@ -41,7 +41,8 @@ const produtoController ={
     },
 
     async cadastrarItem(req, res){
-        try {
+        try {     
+            console.log(req.auth);       
             const { nome, preco, quantidade, fabricante_id, categoria_id } = req.body;
 
             const novoProduto = await Produtos.create(
